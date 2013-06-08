@@ -58,12 +58,10 @@ class TestSimpleUpgrader(unittest.TestCase):
         self.assert_upgrade_performed(upgrader)
 
     def test_package_missingprefix(self):
-        d = generate_test_data_path('packages')
-        upgrader = self.upgrader.for_engine('sqlite3', self.connection, d)
-        upgrade_dir = os.path.join(d, 'missing-prefix')
+        upgrader = self.upgrader.for_engine('sqlite3', self.connection, generate_test_data_path('packages'))
 
         with self.assertRaises(Exception):
-            upgrader.scripts_from_upgradedir(upgrade_dir)
+            upgrader.scripts_from_upgradedir('missing-prefix')
 
 
 if __name__ == '__main__':

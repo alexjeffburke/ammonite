@@ -102,7 +102,7 @@ class SimpleUpgrader(object):
         return self.table[0]
 
     def load_upgrade(self, version):
-        version_dir = os.path.join(self.directory, str(version))
+        version_dir = str(version)
 
         try:
             # see if we were given an explicit manifest
@@ -139,6 +139,9 @@ class SimpleUpgrader(object):
 
         # throw an error if for any reason reading the script failed
         raise Exception("error reading script %s\n" % script_name)
+
+    def make_path(self, *args):
+        return os.path.join(self.directory, *args)
 
     def perform_upgrade(self):
         active_version = self.get_active_version()
@@ -215,11 +218,15 @@ class SimpleUpgrader(object):
         raise Exception('invalid prefix')
 
     def scripts_from_manifestfile(self, version_dir):
+        version_dir = self.make_path(version_dir)
+
         # access manifest file and load scripts it lists
         with open(os.path.join(version_dir, FILE_MANIFEST)) as manifest:
             return self.load_upgrade_components(version_dir, manifest)
 
     def scripts_from_upgradedir(self, version_dir):
+        version_dir = self.make_path(version_dir)
+
         # list directory contents
         scripts = os.listdir(version_dir)
 
