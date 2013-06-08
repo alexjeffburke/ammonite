@@ -223,8 +223,10 @@ class SimpleUpgrader(object):
         # list directory contents
         scripts = os.listdir(version_dir)
 
-        # order the scripts based on their prefix
-        scripts.sort(key=SimpleUpgrader.script_prefix)
+        # where there is only one script in the direcrtory
+        # there is no need to check for prefixes and order by them
+        if len(scripts) > 1:
+            scripts.sort(key=SimpleUpgrader.script_prefix)
 
         # remove the file extensions
         scripts = map(lambda x: x[:x.rfind('.')], scripts)
