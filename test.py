@@ -52,6 +52,11 @@ class TestSimpleUpgrader(unittest.TestCase):
 
         self.assert_upgrade_performed(upgrader)
 
+    def test_perform_numbered_upgrade(self):
+        upgrader = self.upgrader.for_engine('sqlite3', self.connection, generate_test_data_path('upgrades_numbered'))
+
+        self.assert_upgrade_performed(upgrader)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -108,7 +108,12 @@ class SimpleUpgrader(object):
             # see if we were given an explicit manifest
             return self.scripts_from_manifestfile(version_dir)
         except IOError as e:
-            raise Exception('missing manifest file')
+            # if receiving a file not found error treat the directory as
+            # containing numbered scripts
+            if e.errno == 2:
+                return self.scripts_from_upgradedir(version_dir)
+            else:
+                raise Exception('missing manifest file')
 
     def load_upgrade_components(self, upgrade_path, manifest):
         components = []
@@ -191,7 +196,37 @@ class SimpleUpgrader(object):
 
         return 0
 
+    @staticmethod
+    def script_prefix(filename):
+        fileparts = filename.split('-')
+
+        if (len(fileparts) > 1):
+            prefix = fileparts.pop(0)
+
+            try:
+                # check that string leading the first hyphen
+                # is actually a number whose value is > 0
+                # only then do we have a valid ordering key
+                return int(prefix) > 0
+            except ValueError:
+                pass
+
+        # if we've not returned by now we have a problem
+        raise Exception('invalid prefix')
+
     def scripts_from_manifestfile(self, version_dir):
-        # see if we were given an explicit manifest
+        # access manifest file and load scripts it lists
         with open(os.path.join(version_dir, FILE_MANIFEST)) as manifest:
             return self.load_upgrade_components(version_dir, manifest)
+
+    def scripts_from_upgradedir(self, version_dir):
+        # list directory contents
+        scripts = os.listdir(version_dir)
+
+        # order the scripts based on their prefix
+        scripts.sort(key=SimpleUpgrader.script_prefix)
+
+        # remove the file extensions
+        scripts = map(lambda x: x[:x.rfind('.')], scripts)
+
+        return self.load_upgrade_components(version_dir, scripts)
