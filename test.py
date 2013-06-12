@@ -10,6 +10,10 @@ import os
 import sqlite3
 import unittest
 
+# use unittest2 on Python<2.7
+if not hasattr(unittest.TestCase, 'assertIsNotNone'):
+    import unittest2 as unittest
+
 import ammonite
 
 TEST_DATA_PATH = 'test'
