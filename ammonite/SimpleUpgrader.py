@@ -82,7 +82,7 @@ class SimpleUpgrader(object):
 
     def get_available_upgrades(self):
         # list out available version upgrade dirs
-        versions = os.listdir(self.directory)
+        versions = filter(lambda d: os.path.isdir(os.path.join(self.directory, d)), os.listdir(self.directory))
 
         # sort the upgrade version list
         versions.sort()
